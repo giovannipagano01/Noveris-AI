@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noveris AI</title> {/* Page title changed here */}
+    <style>
+        /* Import Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap'); /* Added DM Sans */
+
+        /* Variabili CSS */
+        :root {
+            /* Palette Deep (code 16) */
+            --bg-color: #030617;
+            --primary-color: #1e3a8a;
+            --secondary-color: #14b8a6;
+            --text-color: #cbd5e1;
+            --heading-color: #f8fafc;
+            --card-bg: rgba(15, 23, 42, 0.65);
+            --border-color: rgba(var(--secondary-color-rgb, 20, 184, 166), 0.2);
+            --hover-glow: 0 0 15px rgba(var(--secondary-color-rgb, 20, 184, 166), 0.5);
+            --focus-ring-color: rgba(var(--secondary-color-rgb, 20, 184, 166), 0.4);
+
+            --bg-gradient-1: #030617;
+            --bg-gradient-2: #0b132b;
+            --bg-gradient-3: #1e3a8a;
+            --bg-gradient-4: #0f172a;
+
+            --primary-color-rgb: 30, 58, 138;
+            --secondary-color-rgb: 20, 184, 166;
+            --text-color-rgb: 203, 213, 225;
+            --bg-color-rgb: 3, 6, 23;
+
+            --scroll-bg-pos-y: 0%;
+
+            /* Variabili logo testuale e sfondo interattivo (from code 10) */
+            --noveris-text-idle-color: #2a5275; /* Adjusted for better visibility on darker hero */
+            --noveris-text-active-color: #90cfff;
+            --noveris-text-idle-opacity: 0.6; /* Slightly more visible */
+            --noveris-text-active-opacity: 1;
+            --noveris-animation-duration-medium: 0.3s;
+
+            --glow-color: rgba(180, 220, 255, 0.7);
+            --node-core-color: #fff;
+            --line-pulse-color: #a0c8ff;
+            
+            --bg-node-color-idle: rgba(80, 120, 180, 0.35); /* Adjusted for dark hero */
+            --bg-node-color-active: rgba(180, 220, 255, 0.8);
+            --bg-line-color-idle: rgba(100, 150, 200, 0.03); /* Adjusted for dark hero */
+            --bg-line-color-active: rgba(150, 200, 255, 0.5);
+            --custom-cursor-color: rgba(220, 240, 255, 0.8);
+        }
+
+        /* Reset e Stili Globali */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif; /* Default font */
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            overflow-x: hidden;
+            position: relative;
+            z-index: 0;
+        }
+
+        /* Sfondo Animato Globale con Gradiente (code 16) */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                180deg,
+                var(--bg-gradient-1) 0%,
+                var(--bg-gradient-2) 25%,
+                var(--bg-gradient-3) 50%,
+                var(--bg-gradient-4) 75%,
+                var(--bg-gradient-1) 100%
+            );
+            background-size: 100% 300%;
+            background-position: 0% var(--scroll-bg-pos-y);
+            z-index: -2; /* Behind canvas and particles */
+            transition: background-position 0.2s ease-out;
+        }
+
+        /* Effetto Particelle Sottili (code 16) */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle, rgba(var(--secondary-color-rgb), 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.4;
+            z-index: -1; /* Behind canvas, above gradient */
+            pointer-events: none;
+            animation: subtleMovement 25s linear infinite alternate;
+        }
+
+        @keyframes subtleMovement {
+            from { background-position: 0 0; }
+            to   { background-position: 120px 60px; }
+        }
+
+        /* Contenitore Principale */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header / Navigazione */
+        header {
+            background: rgba(var(--bg-color-rgb), 0.85);
+            backdrop-filter: blur(12px);
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo-link {
+             display: inline-block;
+             vertical-align: middle;
+        }
+        
+        .logo-link svg.noveris-logo {
+             display: block;
+             width: auto;
+             height: 40px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+        }
+        nav ul li { margin-left: 30px; }
+        nav ul li a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 400;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: color 0.3s ease, background-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: var(--secondary-color);
+            transition: width 0.4s ease;
+        }
+        nav ul li a:hover,
+        nav ul li a.active {
+            color: var(--heading-color);
+            background-color: rgba(var(--secondary-color-rgb), 0.1);
+        }
+        nav ul li a:hover::after { width: 80%; }
+
+        /* Sezione Hero */
+        #hero {
+            font-family: 'DM Sans', sans-serif; /* Use DM Sans for Hero */
+            padding-top: 100px; /* Adjusted for new logo */
+            padding-bottom: 80px;
+            text-align: center;
+            min-height: 100vh; /* Make hero section take up viewport height */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            cursor: none; /* For custom canvas cursor */
+        }
+
+        /* Canvas background for Hero */
+        #background-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Behind logo and CTAs */
+        }
+        
+        /* Container for the interactive SVG logo */
+        .interactive-logo-container {
+            position: relative;
+            z-index: 1; /* Above canvas */
+            margin-bottom: 40px; /* Space before CTAs */
+            perspective: 1200px; /* For 3D hover effect if re-enabled */
+        }
+
+        #noveris-v-text-svg {
+            overflow: visible;
+            /* height is set in JS, width also */
+        }
+
+        #noveris-v-text-svg .char-element {
+            font-family: 'DM Sans', sans-serif; 
+            font-weight: 700; 
+            fill: var(--noveris-text-idle-color);
+            opacity: var(--noveris-text-idle-opacity);
+            transform: scale(0.95); 
+            transition: fill var(--noveris-animation-duration-medium) ease-out,
+                        opacity var(--noveris-animation-duration-medium) ease-out,
+                        transform var(--noveris-animation-duration-medium) cubic-bezier(0.25, 0.1, 0.25, 1.5);
+            transform-origin: center center;
+            /* font-size is set dynamically in JS */
+        }
+        
+        #noveris-v-text-svg .char-element.active {
+            fill: var(--noveris-text-active-color);
+            opacity: var(--noveris-text-active-opacity);
+            transform: scale(1); 
+        }
+
+        /* Removed #hero::before glow from code (16) to avoid conflict with canvas */
+
+        /* Original h1 and subheadline from code (16) are removed, SVG logo takes their place */
+        /* Styling for CTAs within Hero */
+        .hero-cta-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            position: relative; /* Ensure CTAs are above canvas */
+            z-index: 1;
+        }
+
+        /* Styling for the new subheadline in Hero */
+        .hero-subheadline {
+            font-family: 'Poppins', sans-serif; /* Consistent with body text */
+            font-size: 1.2em;
+            color: var(--text-color);
+            max-width: 750px; /* Good readability width */
+            margin: 35px auto 0; /* Spacing from CTAs, auto for horizontal centering */
+            line-height: 1.6;
+            font-weight: 300;
+            position: relative; 
+            z-index: 1;
+            /* text-align: center; is inherited from #hero */
+        }
+
+        /* Bottone Call to Action */
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(90deg, #0f766e, var(--secondary-color));
+            color: var(--heading-color);
+            padding: 16px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.15em;
+            transition: transform 0.3s ease, box-shadow 0.4s ease, background-position 0.5s ease;
+            border: none;
+            cursor: pointer; /* Regular cursor for buttons */
+            background-size: 250% auto;
+            box-shadow: 0 6px 20px rgba(var(--secondary-color-rgb), 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(var(--secondary-color-rgb), 0.4);
+            background-position: right center;
+        }
+         .cta-button.secondary {
+            background: transparent;
+            border: 2px solid var(--secondary-color);
+            color: var(--secondary-color);
+            box-shadow: none;
+        }
+        .cta-button.secondary:hover {
+            background: rgba(var(--secondary-color-rgb), 0.1);
+            color: var(--heading-color);
+            border-color: var(--secondary-color);
+            box-shadow: 0 6px 20px rgba(var(--secondary-color-rgb), 0.2);
+        }
+
+        /* Sezioni Generiche */
+        section {
+            padding: 90px 0;
+            border-bottom: 1px solid rgba(var(--secondary-color-rgb), 0.1);
+            position: relative;
+            overflow: hidden;
+            background: transparent; /* Sections are transparent to show body background */
+        }
+        section:last-of-type { border-bottom: none; }
+
+        /* Titoli Sezione */
+        section h2 {
+            font-size: 3em;
+            font-weight: 600;
+            color: var(--heading-color);
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+            padding-bottom: 20px;
+            z-index: 1;
+        }
+        section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 4px;
+            background: var(--secondary-color);
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(var(--secondary-color-rgb), 0.5);
+            z-index: 1;
+        }
+        section p.intro-text {
+            text-align: center;
+            max-width: 750px;
+            margin: -40px auto 60px auto;
+            font-weight: 300;
+            font-size: 1.1em;
+        }
+
+        /* Grid container */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 35px;
+        }
+        .grid-container.three-cols {
+             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        /* Card Styling */
+        .card {
+            background: var(--card-bg);
+            padding: 35px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease, background-color 0.35s ease;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0, 0.3);
+            z-index: 1;
+        }
+        .card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            border-color: rgba(var(--secondary-color-rgb), 0.6);
+            background-color: rgba(15, 23, 42, 0.8);
+        }
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(var(--secondary-color-rgb), 0.1), transparent 50%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .card:hover::before { opacity: 1; }
+        .card h3 {
+            font-size: 1.7em;
+            color: var(--secondary-color);
+            margin-bottom: 18px;
+            position: relative; z-index: 1;
+            font-weight: 600;
+        }
+        .card p {
+            font-size: 1.05em;
+            color: var(--text-color);
+            margin-bottom: 0;
+            position: relative; z-index: 1;
+            font-weight: 300;
+        }
+        .card .icon-placeholder {
+            font-size: 2.5em;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            display: block;
+            text-align: center;
+        }
+
+        /* Sezione About / Vision / Why Noveris (Shared text styling) */
+        .text-section p {
+            max-width: 850px;
+            margin: 0 auto 25px auto;
+            text-align: center;
+            font-size: 1.15em;
+            font-weight: 300;
+        }
+        .text-section p:last-child { margin-bottom: 0; }
+
+        /* Sezione Contatti Form */
+        #contact form {
+            max-width: 650px;
+            margin: 40px auto 0 auto;
+            display: grid;
+            gap: 25px;
+        }
+        #contact input,
+        #contact textarea {
+            width: 100%;
+            padding: 18px;
+            background: rgba(var(--bg-color-rgb), 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        }
+        #contact input:focus,
+        #contact textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px var(--focus-ring-color), inset 0 1px 3px rgba(0,0,0, 0.3);
+            background-color: rgba(var(--bg-color-rgb), 0.7);
+        }
+        #contact textarea {
+            resize: vertical;
+            min-height: 160px;
+        }
+        #contact button {
+            justify-self: center;
+            margin-top: 10px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 50px 20px;
+            text-align: center;
+            margin-top: 0;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            position: relative; z-index: 1;
+        }
+        footer .footer-links {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        footer .footer-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        footer .footer-links a:hover { color: var(--secondary-color); }
+        footer p {
+            color: rgba(var(--text-color-rgb), 0.6);
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        footer p:last-child { margin-bottom: 0; }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 992px) {
+            html { scroll-padding-top: 70px; }
+            #hero { padding-top: 150px; } /* Adjusted for header and new logo */
+            section h2 { font-size: 2.6em; }
+            .grid-container {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 25px;
+            }
+             .hero-subheadline { font-size: 1.15em; margin-top: 30px; }
+        }
+
+        @media (max-width: 768px) {
+            html { scroll-padding-top: 120px; }
+            nav { flex-direction: column; align-items: center; }
+            nav ul { margin-top: 15px; padding-left: 0; }
+            nav ul li { margin: 0 15px; }
+
+            #hero { padding-top: 180px; min-height: 80vh;} /* More padding due to stacked nav */
+             .interactive-logo-container { margin-bottom: 30px; }
+            section { padding: 70px 0; }
+            section h2 { font-size: 2.2em; margin-bottom: 50px;}
+            .grid-container { grid-template-columns: 1fr; gap: 30px;}
+            .card { padding: 30px; }
+            #contact form { max-width: 90%; }
+             .hero-subheadline { font-size: 1.1em; margin-top: 25px; max-width: 90%; }
+        }
+
+        @media (max-width: 480px) {
+            html { font-size: 15px; scroll-padding-top: 110px; }
+            header { padding: 12px 0; }
+            nav { align-items: center; }
+            .logo-link { margin-bottom: 10px; }
+            nav ul { flex-wrap: wrap; justify-content: center; margin-top: 0; }
+            nav ul li { margin: 5px 8px; }
+            nav ul li a { padding: 6px 10px; font-size: 0.95em;}
+
+            #hero { padding-top: 170px; padding-bottom: 60px; min-height: 70vh;}
+            .interactive-logo-container { margin-bottom: 25px; }
+            .cta-button { padding: 14px 32px; font-size: 1.05em; }
+            .hero-cta-container { flex-direction: column; gap: 15px; }
+            .hero-subheadline { font-size: 1em; margin-top: 25px; max-width: 90%; }
+
+
+            section { padding: 60px 0; }
+            section h2 { font-size: 2em; margin-bottom: 40px;}
+            section h2::after { width: 70px; height: 3px;}
+            .card { padding: 25px; }
+            .card h3 { font-size: 1.5em; }
+            .card p { font-size: 1em;}
+            #contact input, #contact textarea { padding: 15px; }
+            #contact textarea { min-height: 140px; }
+            footer { padding: 40px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="container">
+            <a href="#hero" class="logo-link" aria-label="Noveris Home">
+              <svg class="noveris-logo progressive" viewBox="0 0 215 55" xmlns="http://www.w3.org/2000/svg">
+                <style>
+                  .noveris-logo.progressive { filter: drop-shadow(0 1px 4px rgba(var(--secondary-color-rgb), 0.45)); transition: filter 0.4s ease-out; overflow: visible; cursor: pointer; }
+                  .noveris-logo.progressive .logo-text { font-family: 'Poppins', sans-serif; font-size: 40px; font-weight: 700; fill: var(--heading-color); letter-spacing: 0.5px; }
+                  .noveris-logo.progressive .logo-text tspan { display: inline-block; transform-origin: bottom center; fill: var(--heading-color); transform: translateY(0) scale(1); will-change: transform, fill; }
+                  .noveris-logo.progressive .accent-curve { fill: none; stroke: var(--secondary-color); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 200; stroke-dashoffset: 200; transition: stroke-dashoffset 0.6s cubic-bezier(0.23, 1, 0.32, 1) 0.1s, stroke 0.3s ease; }
+                  .noveris-logo.progressive .final-dot { fill: var(--secondary-color); r: 3; opacity: 0; transition: opacity 0.4s ease 0.4s, r 0.3s ease 0.4s, fill 0.3s ease; }
+                  @keyframes letterWave { 0% { transform: translateY(0) scale(1); fill: var(--heading-color); } 50% { transform: translateY(-4px) scale(1.1); fill: var(--secondary-color); } 100% { transform: translateY(0) scale(1); fill: var(--heading-color); } }
+                  .noveris-logo.progressive:hover { filter: drop-shadow(0 2px 10px rgba(var(--secondary-color-rgb), 0.75)); }
+                  .noveris-logo.progressive:hover .logo-text tspan { animation-name: letterWave; animation-duration: 0.6s; animation-timing-function: ease-in-out; animation-iteration-count: 1; animation-fill-mode: forwards; }
+                  .noveris-logo.progressive:hover .logo-text tspan:nth-of-type(1) { animation-delay: 0.00s; }
+                  .noveris-logo.progressive:hover .logo-text tspan:nth-of-type(2) { animation-delay: 0.06s; }
+                  .noveris-logo.progressive:hover .logo-text tspan:nth-of-type(3) { animation-delay: 0.12s; }
+                  .noveris-logo.progressive:hover .logo-text tspan:nth-of-type(4) { animation-delay: 0.18s; }
+                  .noveris-logo.progressive:hover .logo-text tspan:nth-of-type(5) { animation-delay: 0.24s; }
+                  .noveris-logo.progressive:hover .logo-text tspan:nth-of-type(6) { animation-delay: 0.30s; }
+                  .noveris-logo.progressive:hover .logo-text tspan:nth-of-type(7) { animation-delay: 0.36s; }
+                  .noveris-logo.progressive:hover .accent-curve { stroke-dashoffset: 0; }
+                  .noveris-logo.progressive:hover .final-dot { opacity: 1; r: 4; }
+                </style>
+                <text class="logo-text" x="10" y="38">
+                    <tspan>N</tspan><tspan>o</tspan><tspan>v</tspan><tspan>e</tspan><tspan>r</tspan><tspan>i</tspan><tspan>s</tspan>
+                </text>
+                <path class="accent-curve" d="M 35 47 Q 100 56 185 47" />
+                <circle class="final-dot" cx="198" cy="47" />
+              </svg>
+            </a>
+            <ul>
+                <li><a href="#what-we-offer">What We Offer</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#why-noveris">Why Noveris</a></li>
+                <li><a href="#about-us">About Us</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero">
+            <canvas id="background-canvas"></canvas>
+            <div class="interactive-logo-container">
+                <svg id="noveris-v-text-svg" height="130"> 
+                    <!-- Contenuto generato da JS -->
+                </svg>
+            </div>
+            <!-- Original H1 and P are removed, using SVG logo instead -->
+            <div class="hero-cta-container">
+                <a href="#contact" class="cta-button">Get Started</a>
+                <a href="#how-it-works" class="cta-button secondary">How It Works</a>
+            </div>
+                        <p class="hero-subheadline">Intelligent Agents. Measurable Growth.<br>Noveris is a SaaS platform that delivers plug-and-play AI agents, purpose-built to drive business growth — fast, measurable, and integration-ready.</p>
+        </section>
+
+        <section id="our-vision" class="container text-section">
+            <h2>AI that works. Immediately.</h2>
+            <p>We believe AI should deliver value from day one — without complex setup, code, or prompt engineering. Noveris brings practical AI agents to teams focused on performance, helping them increasing revenues.</p>
+        </section>
+
+        <section id="what-we-offer" class="container">
+            <h2>Purpose-built agents, ready in minutes.</h2>
+            <p class="intro-text">Each Noveris agent is designed to solve a specific problem with clarity and speed. Simple to activate, easy to integrate, and optimized for measurable results.</p>
+            <div class="grid-container three-cols">
+                 <div class="card">
+                    <h3>Lead Enrichment</h3>
+                    <p>Instantly augment raw contact data with actionable insights.</p>
+                </div>
+                <div class="card">
+                    <h3>Upselling & Cross-Selling</h3>
+                    <p>Identify expansion opportunities within existing accounts to maximize revenue.</p>
+                </div>
+                 <div class="card">
+                    <h3>Proactive Email Follow-ups</h3>
+                    <p>Agents send timely, personalized follow-ups without manual input.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="container">
+            <h2>No setup hassle. Full impact.</h2>
+            <div class="grid-container three-cols">
+                 <article class="card">
+                    <span class="icon-placeholder">[ICON]</span> <!-- TODO: Replace with actual icon -->
+                    <h3>No Custom Code</h3>
+                    <p>Agents are plug-and-play, deployable in minutes.</p>
+                </article>
+                 <article class="card">
+                    <span class="icon-placeholder">[ICON]</span> <!-- TODO: Replace with actual icon -->
+                    <h3>Native Integrations</h3>
+                    <p>Connect with your CRM, email, and spreadsheets in a few clicks.</p>
+                </article>
+                 <article class="card">
+                    <span class="icon-placeholder">[ICON]</span> <!-- TODO: Replace with actual icon -->
+                    <h3>MCP Protocol</h3>
+                    <p>A standard way to interface with AI-ready apps across your stack.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="why-noveris" class="container text-section">
+            <h2>Tangible outcomes. No guesswork.</h2>
+            <p>Noveris doesn’t offer frameworks — it delivers ready-to-use solutions that cut busywork and amplify performance. More conversions, faster execution, fewer bottlenecks.</p>
+        </section>
+
+        <section id="about-us" class="container text-section">
+            <h2>Built by operators, powered by AI.</h2>
+            <p>We’re a team of engineers, product builders and business leaders. What unites us is a focus on practical impact: creating AI tools that actually help modern teams scale revenue — with less friction and more speed.</p>
+        </section>
+
+        <section id="contact" class="container">
+            <h2>Start Your AI Agent Journey Today</h2>
+            <p class="intro-text">Ready to see how Noveris can transform your revenue operations? Reach out for a demo or to discuss your specific needs.</p>
+            <form action="#" method="post">
+                <input type="text" name="name" placeholder="Your Name" required aria-label="Your Name">
+                <input type="email" name="email" placeholder="Your Work Email" required aria-label="Your Work Email">
+                <input type="text" name="company" placeholder="Company Name" aria-label="Company Name">
+                <textarea name="message" placeholder="Tell us about your challenges or what you'd like to automate..." required aria-label="Your message"></textarea>
+                <button type="submit" class="cta-button">Request a Demo</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <ul class="footer-links">
+                <li><a href="#about-us">About</a></li>
+                <li><a href="#">Careers</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#">Terms & Privacy</a></li>
+            </ul>
+            <p>© <span id="currentYear"></span> Noveris. All rights reserved.</p>
+            <p>Driving Revenue with Intelligent Automation.</p>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Interactive SVG Logo Text (from code 10) ---
+        const svgTextLogo = document.getElementById('noveris-v-text-svg');
+        if (svgTextLogo) {
+            const textContent = "NOVERIS";
+            const targetGlyphHeight = 90;
+            const letterKerning = 3;
+            const dmSansCapHeightToEmRatio = 0.715;
+            const textElementsFontSize = targetGlyphHeight / dmSansCapHeightToEmRatio;
+            const initialAnimationDelay = 300;
+            const charActivationStagger = 150;
+            let currentX = 15;
+            const svgHeight = 130; // Matches SVG element height attribute
+            const baselineY = targetGlyphHeight + (svgHeight - targetGlyphHeight) / 2;
+            const elementsToAnimate = [];
+
+            textContent.split('').forEach((char) => {
+                const textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                textElement.classList.add('char-element');
+                textElement.setAttribute('x', currentX);
+                textElement.setAttribute('y', baselineY);
+                textElement.setAttribute('font-size', textElementsFontSize);
+                textElement.textContent = char;
+                svgTextLogo.appendChild(textElement);
+                const charWidth = textElement.getComputedTextLength();
+                currentX += charWidth + letterKerning;
+                elementsToAnimate.push({ element: textElement, type: 'text' });
+            });
+
+            const totalWidth = currentX + 15 - letterKerning;
+            svgTextLogo.setAttribute('width', totalWidth);
+            svgTextLogo.setAttribute('viewBox', `0 0 ${totalWidth} ${svgHeight}`);
+
+            let cumulativeDelay = initialAnimationDelay;
+            elementsToAnimate.forEach((item) => {
+                setTimeout(() => {
+                    item.element.classList.add('active');
+                }, cumulativeDelay);
+                cumulativeDelay += charActivationStagger;
+            });
+        }
+
+        // --- GESTIONE ROTAZIONE LOGO CONTAINER (from code 10, adapted selector) ---
+        const logoContainer = document.querySelector('.interactive-logo-container'); // Updated selector
+        if (logoContainer) {
+            let mouseForLogo = { x: window.innerWidth / 2, y: window.innerHeight / 2, isOverContainer: false };
+            let targetRotation = { x: 0, y: 0 };
+            let currentRotation = { x: 0, y: 0 };
+            const rotationFactor = 0.015;
+            const lerpFactor = 0.08;
+
+            const heroSection = document.getElementById('hero'); // Restrict mousemove to hero
+            
+            if (heroSection) {
+                heroSection.addEventListener('mousemove', (e) => {
+                    // Check if mouse is roughly over the logo container for activation
+                    const rect = logoContainer.getBoundingClientRect();
+                    const parentRect = heroSection.getBoundingClientRect();
+                    // Check if cursor is within hero section first
+                    if (e.clientX >= parentRect.left && e.clientX <= parentRect.right &&
+                        e.clientY >= parentRect.top && e.clientY <= parentRect.bottom) {
+
+                        // Calculate rotation based on mouse relative to logo container center
+                        targetRotation.y = (e.clientX - (rect.left + rect.width / 2)) * rotationFactor;
+                        targetRotation.x = -(e.clientY - (rect.top + rect.height / 2)) * rotationFactor;
+                        mouseForLogo.isOverContainer = true; // Assume active if mouse is in hero
+                    } else {
+                         mouseForLogo.isOverContainer = false;
+                         targetRotation = { x: 0, y: 0 };
+                    }
+                });
+                 heroSection.addEventListener('mouseleave', () => {
+                    mouseForLogo.isOverContainer = false;
+                    targetRotation = { x: 0, y: 0 };
+                });
+            }
+
+
+            function updateLogoContainerRotation() {
+                currentRotation.x += (targetRotation.x - currentRotation.x) * lerpFactor;
+                currentRotation.y += (targetRotation.y - currentRotation.y) * lerpFactor;
+                logoContainer.style.transform = `rotateX(${currentRotation.x}deg) rotateY(${currentRotation.y}deg) translateZ(0px)`;
+                requestAnimationFrame(updateLogoContainerRotation);
+            }
+            if (logoContainer.style) {
+                 updateLogoContainerRotation();
+            }
+        }
+
+        // --- SFONDO CANVAS INTERATTIVO (from code 10) ---
+        const bgCanvas = document.getElementById('background-canvas');
+        if (bgCanvas) {
+            const bgCtx = bgCanvas.getContext('2d');
+            let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2, active: false };
+            let bgNodes = [];
+            let agentCursorAngle = 0;
+            const numBgNodes = Math.max(50, Math.floor(window.innerWidth / 20)); // Responsive node count
+            const nodeInteractionRadius = 120;
+            let effectiveConnectionDistance;
+
+            const bgNodeColorIdle = getComputedStyle(document.documentElement).getPropertyValue('--bg-node-color-idle').trim();
+            const bgNodeColorActive = getComputedStyle(document.documentElement).getPropertyValue('--bg-node-color-active').trim();
+            const bgLineColorIdle = getComputedStyle(document.documentElement).getPropertyValue('--bg-line-color-idle').trim();
+            const bgLineColorActive = getComputedStyle(document.documentElement).getPropertyValue('--bg-line-color-active').trim();
+            const customCursorColor = getComputedStyle(document.documentElement).getPropertyValue('--custom-cursor-color').trim();
+
+
+            function updateCanvasDimensions() {
+                const heroRect = document.getElementById('hero').getBoundingClientRect();
+                bgCanvas.width = heroRect.width;
+                bgCanvas.height = heroRect.height;
+                // Adjust effective connection distance based on smaller of width/height for hero
+                effectiveConnectionDistance = Math.min(bgCanvas.width, bgCanvas.height) * 0.8; 
+            }
+            
+
+            function parseRgbaColor(colorString) {
+                const match = colorString.match(/rgba?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\)/);
+                if (match) {
+                    return {
+                        r: parseInt(match[1]), g: parseInt(match[2]), b: parseInt(match[3]),
+                        a: match[4] !== undefined ? parseFloat(match[4]) : 1
+                    };
+                }
+                console.warn("Could not parse color:", colorString, "using fallback.");
+                return { r: 0, g: 0, b: 0, a: 1 };
+            }
+            
+            const heroElementForMouse = document.getElementById('hero');
+            if(heroElementForMouse) {
+                heroElementForMouse.addEventListener('mousemove', (e) => {
+                    const rect = bgCanvas.getBoundingClientRect(); // Use canvas rect for mouse coords relative to canvas
+                    mouse.x = e.clientX - rect.left;
+                    mouse.y = e.clientY - rect.top;
+                    mouse.active = true;
+                });
+                heroElementForMouse.addEventListener('mouseleave', () => {
+                    mouse.active = false;
+                });
+                heroElementForMouse.addEventListener('mouseenter', () => {
+                    mouse.active = true;
+                });
+            }
+
+
+            class BgNode {
+                constructor() {
+                    this.x = Math.random() * bgCanvas.width;
+                    this.y = Math.random() * bgCanvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.2;
+                    this.vy = (Math.random() - 0.5) * 0.2;
+                    this.radius = Math.random() * 1.5 + 0.5; // Smaller nodes
+                    this.baseRadius = this.radius;
+                    this.color = bgNodeColorIdle;
+                    this.isActive = false;
+                    this.activation = 0;
+                }
+                update() {
+                    this.x += this.vx; this.y += this.vy;
+                    if (this.x < -this.radius) this.x = bgCanvas.width + this.radius;
+                    if (this.x > bgCanvas.width + this.radius) this.x = -this.radius;
+                    if (this.y < -this.radius) this.y = bgCanvas.height + this.radius;
+                    if (this.y > bgCanvas.height + this.radius) this.y = -this.radius;
+
+                    let dxMouse = this.x - mouse.x;
+                    let dyMouse = this.y - mouse.y;
+                    let distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
+                    this.isActive = mouse.active && distMouse < nodeInteractionRadius;
+
+                    this.activation += (this.isActive ? 1 : 0 - this.activation) * (this.isActive ? 0.1 : 0.05);
+                    this.radius = this.baseRadius + this.activation * 1.5; // Less aggressive radius change
+                    
+                    const idleColors = parseRgbaColor(bgNodeColorIdle);
+                    const activeColors = parseRgbaColor(bgNodeColorActive);
+                    let r = idleColors.r + (activeColors.r - idleColors.r) * this.activation;
+                    let g = idleColors.g + (activeColors.g - idleColors.g) * this.activation;
+                    let b = idleColors.b + (activeColors.b - idleColors.b) * this.activation;
+                    let a = idleColors.a + (activeColors.a - idleColors.a) * this.activation;
+                    this.color = `rgba(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)}, ${a.toFixed(2)})`;
+                }
+                draw() {
+                    bgCtx.beginPath();
+                    bgCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    bgCtx.fillStyle = this.color;
+                    bgCtx.fill();
+                    if (this.activation > 0.1) {
+                        const activeNodeColors = parseRgbaColor(bgNodeColorActive);
+                        bgCtx.beginPath();
+                        bgCtx.arc(this.x, this.y, this.radius + 2 + this.activation * 2, 0, Math.PI * 2); // Smaller glow
+                        bgCtx.fillStyle = `rgba(${activeNodeColors.r}, ${activeNodeColors.g}, ${activeNodeColors.b}, ${this.activation * 0.05})`; // More subtle glow
+                        bgCtx.fill();
+                    }
+                }
+            }
+
+            function initBgNodes() {
+                updateCanvasDimensions(); // Ensure dimensions are set before creating nodes
+                bgNodes = [];
+                for (let i = 0; i < numBgNodes; i++) {
+                    bgNodes.push(new BgNode());
+                }
+            }
+
+            function drawBgConnections() {
+                const idleLineColors = parseRgbaColor(bgLineColorIdle);
+                const activeLineColors = parseRgbaColor(bgLineColorActive);
+                for (let i = 0; i < bgNodes.length; i++) {
+                    for (let j = i + 1; j < bgNodes.length; j++) {
+                        let p1 = bgNodes[i]; let p2 = bgNodes[j];
+                        let dx = p1.x - p2.x; let dy = p1.y - p2.y;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < effectiveConnectionDistance) {
+                            let interpolationFactor = Math.min((p1.activation + p2.activation) / 2, 1.0);
+                            let r_l = idleLineColors.r + (activeLineColors.r - idleLineColors.r) * interpolationFactor;
+                            let g_l = idleLineColors.g + (activeLineColors.g - idleLineColors.g) * interpolationFactor;
+                            let b_l = idleLineColors.b + (activeLineColors.b - idleLineColors.b) * interpolationFactor;
+                            let ba_l = idleLineColors.a + (activeLineColors.a - idleLineColors.a) * interpolationFactor;
+                            let dA_F = Math.pow(Math.max(0, 1 - distance / effectiveConnectionDistance), 1.5);
+                            let fa_l = Math.max(0, Math.min(ba_l * dA_F, 1));
+                            let blw = 0.05; let alwb = 0.3; // Thinner lines
+                            let lwI = blw + (alwb * interpolationFactor);
+                            let tA_F = Math.pow(Math.max(0, 1 - distance / effectiveConnectionDistance), 0.75);
+                            let flw = Math.max(0.03, lwI * tA_F); // Min line width even smaller
+                            if (fa_l > 0.001 && flw > 0.01) {
+                                bgCtx.beginPath(); bgCtx.moveTo(p1.x, p1.y); bgCtx.lineTo(p2.x, p2.y);
+                                bgCtx.strokeStyle = `rgba(${Math.round(r_l)},${Math.round(g_l)},${Math.round(b_l)},${fa_l.toFixed(3)})`;
+                                bgCtx.lineWidth = flw; bgCtx.stroke();
+                            }
+                        }
+                    }
+                }
+            }
+
+            function drawCustomCursor() {
+                if (mouse.active) {
+                    agentCursorAngle += 0.025;
+                    const coreRadius = 3; // Smaller cursor
+                    const parsedCustomCursorColor = parseRgbaColor(customCursorColor);
+                    bgCtx.beginPath(); bgCtx.arc(mouse.x, mouse.y, coreRadius, 0, Math.PI * 2);
+                    bgCtx.fillStyle = customCursorColor; bgCtx.fill();
+                    bgCtx.beginPath(); bgCtx.arc(mouse.x, mouse.y, coreRadius + 2, 0, Math.PI * 2); // Smaller glow
+                    bgCtx.fillStyle = `rgba(${parsedCustomCursorColor.r},${parsedCustomCursorColor.g},${parsedCustomCursorColor.b},0.15)`;
+                    bgCtx.fill();
+                    const numSatellites = 3; const satelliteDistance = 9; const satelliteRadius = 1.5; // Smaller satellites
+                    for (let i = 0; i < numSatellites; i++) {
+                        const angle = agentCursorAngle + (i * (Math.PI * 2 / numSatellites));
+                        const satX = mouse.x + Math.cos(angle) * satelliteDistance;
+                        const satY = mouse.y + Math.sin(angle) * satelliteDistance;
+                        bgCtx.beginPath(); bgCtx.arc(satX, satY, satelliteRadius, 0, Math.PI * 2);
+                        bgCtx.fillStyle = `rgba(${parsedCustomCursorColor.r},${parsedCustomCursorColor.g},${parsedCustomCursorColor.b},${parsedCustomCursorColor.a * 0.6})`;
+                        bgCtx.fill();
+                    }
+                }
+            }
+            
+            let animationFrameId_bg;
+            function animateBackground() {
+                bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+                bgNodes.forEach(node => { node.update(); node.draw(); });
+                drawBgConnections();
+                drawCustomCursor();
+                animationFrameId_bg = requestAnimationFrame(animateBackground);
+            }
+
+            initBgNodes(); // Call after defining updateCanvasDimensions
+            animateBackground();
+
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    if (animationFrameId_bg) cancelAnimationFrame(animationFrameId_bg);
+                    updateCanvasDimensions(); // This will read the new hero dimensions
+                    initBgNodes();          // Re-initialize nodes for new dimensions
+                    animateBackground();    // Restart animation
+                }, 250); // Debounce resize
+            });
+        } // end if(bgCanvas)
+
+        // --- Original JS from code (16) ---
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        function throttle(func, limit) {
+            let inThrottle;
+            return function() {
+                const args = arguments; const context = this;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
+            }
+        }
+
+        const updateBodyBackgroundPosition = () => {
+            const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollTop = window.scrollY;
+            const scrollProgress = scrollableHeight > 0 ? Math.min(scrollTop / scrollableHeight, 1) : 0;
+            const backgroundPosYPercent = scrollProgress * 100;
+            document.documentElement.style.setProperty('--scroll-bg-pos-y', `${backgroundPosYPercent}%`);
+        };
+
+        const throttledBodyBgUpdate = throttle(updateBodyBackgroundPosition, 50);
+        window.addEventListener('scroll', throttledBodyBgUpdate);
+        updateBodyBackgroundPosition(); // Initial call
+        window.addEventListener('resize', throttledBodyBgUpdate);
+
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    }); // End DOMContentLoaded
+    </script>
+
+</body>
+</html>
